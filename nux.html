@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Love You Animation</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fffafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    /* ตัวการ์ตูน */
+    .char {
+      position: absolute;
+      left: 40px;
+      bottom: 40px;
+      width: 130px;
+      user-select: none;
+    }
+
+    /* หัวใจ */
+    .heart {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
+      background-size: cover;
+      opacity: 0;
+      transform: scale(0);
+    }
+
+    /* ข้อความ */
+    .text {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 40px;
+      color: crimson;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 1s ease-in;
+    }
+
+    .show {
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- รูปการ์ตูน -->
+    <img src="e513bf2c-3fa5-4510-82d4-c579c0c1e928.png" class="char" alt="character" />
+    <div class="text">รักน้าาาาา</div>
+  </div>
+
+  <script>
+    const container = document.querySelector('.container');
+    const text = document.querySelector('.text');
+
+    // พิกัดหัวใจใหญ่
+    const heartShape = [
+      [0,2],[0,3],[0,5],[0,6],
+      [1,1],[1,4],,[1,7],
+      [2,1],[2,7],
+      [3,2],[3,6],
+      [4,3],[4,5],
+      [5,4]
+    ];
+
+    // ยิงหัวใจแบบลอย
+    function shootHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      container.appendChild(heart);
+
+      const startX = 130; // จุดเริ่มต้นจากรูปตัวการ์ตูน
+      const startY = 270;
+      heart.style.left = startX + 'px';
+      heart.style.top = startY + 'px';
+
+      const angle = Math.random() * Math.PI / 2 - Math.PI / 4;
+      const distance = 250 + Math.random() * 100;
+      const x = startX + distance * Math.cos(angle);
+      const y = startY - distance * Math.sin(angle);
+
+    heart.animate([
+      { transform: 'translate(0,0) scale(0) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${x - startX}px, ${y - startY}px) scale(1.2) rotate(15deg)`, opacity: 0.9 },
+      { transform: `translate(${x - startX}px, ${y - startY - 150}px) scale(0.5) rotate(-15deg)`, opacity: 0 }
+    ], {
+       duration: 1500,
+       easing: 'ease-out',
+       fill: 'forwards'
+    });
+
+      setTimeout(() => heart.remove(), 1500);
+    }
+
+    // รวมเป็นหัวใจใหญ่
+    function makeHeartShape() {
+      heartShape.forEach(([row, col], i) => {
+        const h = document.createElement('div');
+        h.classList.add('heart');
+        h.style.left = `${250 + (col - 4) * 30}px`;
+        h.style.top = `${80 + row * 30}px`;
+        h.style.opacity = '0';
+        container.appendChild(h);
+
+        setTimeout(() => {
+          h.animate([
+            { transform: 'scale(0)', opacity: 0 },
+            { transform: 'scale(1.2)', opacity: 1 },
+            { transform: 'scale(1)', opacity: 1 }
+          ], {
+            duration: 800,
+            easing: 'ease-out',
+            fill: 'forwards'
+          });
+        }, i * 100);
+      });
+
+      setTimeout(() => text.classList.add('show'), 2000);
+    }
+
+    // เริ่มยิงหัวใจ
+    let shots = 0;
+    const shootInterval = setInterval(() => {
+      shootHeart();
+      shots++;
+      if (shots > 15) {
+        clearInterval(shootInterval);
+        makeHeartShape();
+      }
+    }, 150);
+  </script>
+</body>
+</html>
