@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ร้ากน้าาาา</title>
+  <style>
+    :root{--bg:#fff0f6;--accent:#ff5c8a;--muted:#6b6b6b}
+    *{box-sizing:border-box;font-family:inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 10%, #fffafc 0%, var(--bg) 60%);color:#222;overflow:hidden}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+    .card{width:100%;max-width:800px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,250,252,0.95));border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,0.08);padding:30px;position:relative;overflow:hidden;transition:opacity 0.6s ease}
+
+    /* header */
+    h1{font-size:34px;margin:0 0 6px 0;color:var(--accent);letter-spacing:0.2px;text-align:center}
+    p.lead{margin:0 0 18px 0;color:var(--muted);font-size:15px;text-align:center}
+
+    /* hearts */
+    .hearts{position:absolute;inset:0;pointer-events:none;}
+    .heart{position:absolute;width:28px;height:28px;transform:translate(-50%,-50%) rotate(45deg);background:var(--accent);border-radius:4px 4px 0 0;opacity:0.95}
+    .heart::before,.heart::after{content:'';position:absolute;width:28px;height:28px;background:var(--accent);border-radius:50%}
+    .heart::before{top:-14px;left:0}
+    .heart::after{left:-14px;top:0}
+
+    /* content */
+    .box{padding:18px;text-align:center}
+    .message{background:linear-gradient(180deg,#fff 0%,#fff7fb 100%);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.04);display:inline-block}
+
+    .big-msg{font-size:20px;margin:0 0 12px 0}
+    .small{color:var(--muted);font-size:14px}
+
+    /* button */
+    .btn{display:inline-block;padding:12px 18px;border-radius:999px;background:var(--accent);color:white;text-decoration:none;font-weight:600;box-shadow:0 8px 20px rgba(255,92,138,0.25);cursor:pointer;border:0}
+    .btn.secondary{background:transparent;color:var(--accent);border:2px solid rgba(255,92,138,0.12)}
+
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all .28s}
+    .overlay.open{opacity:1;pointer-events:auto}
+    .modal{width:92%;max-width:520px;background:white;border-radius:14px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.25);text-align:center}
+    .modal h2{margin:0 0 8px 0}
+
+    /* intro screen */
+    #intro{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity 0.6s ease;z-index:20}
+    #intro h2{color:var(--accent);font-size:30px;margin-bottom:10px}
+    #intro p{color:var(--muted);font-size:16px;max-width:80%;}
+
+    .hidden{opacity:0;pointer-events:none}
+  </style>
+</head>
+<body>
+  <!-- intro screen -->
+  <div id="intro">
+    <h2>มีข้อความสำคัญมาฮั้ปป 💌</h2>
+    <p>แตะที่หน้าจอเพื่ออ่านข้อความ</p>
+  </div>
+
+  <div class="wrap hidden" id="mainWrap">
+    <div class="card">
+      <div class="hearts" id="hearts"></div>
+      <div class="box">
+        <h1 id="title">ถึง <span id="loverNameDisplay">คนพิเศษ</span> 💖</h1>
+        <p class="lead">ผมอะเป็นคนไม่มีความมั่นใจเลย ไม่ได้มีเวลาให้นุ่นตอนตลอด ไม่ได้มีตังพาไปเที่ยวเล่นทุกวัน</p>
+        <p class="lead">แต่ผมรักนุ่นมากๆเลยนะ ผมอยากจะมีนุ่นในทุกวันอยากจะได้ยินเสียงในทุกๆเช้าและก่อนนอน</p>
+        <p class="lead">นุ่นอยากสร้างอนาคตไปกับผมมั้ย</p>
+        <div class="message">
+          <p class="big-msg" id="typed">สวัสดี... ผมอยากบอกว่า</p>
+          <p class="small">แตะปุ่มด้านล่างเมื่อคุณพร้อมจะให้คำตอบ :)</p>
+          <div style="margin-top:14px">
+            <button class="btn" id="askBtn">กดเพื่อถามว่าเป็นแฟนกันไหม?</button>
+            <button class="btn secondary" id="replayBtn" style="margin-left:8px">เล่นซ้ำข้อความ</button>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;color:var(--muted);font-size:13px">จาก: <strong id="yourNameDisplay">ใครสักคนที่รักคุณ</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2>คุณจะเป็นแฟนกับ <span id="loverNameModal">คนพิเศษ</span> ไหม?</h2>
+      <p style="margin:6px 0 18px 0;color:var(--muted)">เลือกคำตอบตามที่รู้สึกได้เลย</p>
+      <div>
+        <button class="btn" id="yesBtn">ใช่ 💕</button>
+        <button class="btn secondary" id="noBtn" style="margin-left:10px">ขอโทษ เราไม่พร้อม</button>
+      </div>
+      <p style="margin-top:14px;font-size:13px;color:var(--muted)">(หากกดใช่ จะมีเซอร์ไพรส์เล็ก ๆ)</p>
+    </div>
+  </div>
+
+  <script>
+    const loverName = 'แมวเมี๊ยว';
+    const yourName = 'ผม';
+    document.getElementById('loverNameDisplay').innerText = loverName;
+    document.getElementById('loverNameModal').innerText = loverName;
+    document.getElementById('yourNameDisplay').innerText = yourName;
+
+    const typedEl = document.getElementById('typed');
+    const messages = [
+      `เป็นแฟนเค้าน้าา?`,
+      `คุณอยากจะเป็นแฟนกับผมมั้ยคั้บบ ?`,
+    ];
+    let msgIndex = 0;
+
+    function playTyping(){
+      typedEl.innerText = '';
+      const txt = messages[msgIndex];
+      let k = 0;
+      const t = setInterval(()=>{
+        typedEl.innerText += txt[k++]||'';
+        if(k >= txt.length){clearInterval(t);}
+      },38);
+      msgIndex = (msgIndex+1)%messages.length;
+    }
+    playTyping();
+
+    document.getElementById('replayBtn').addEventListener('click', ()=>playTyping());
+
+    const heartsBox = document.getElementById('hearts');
+    function spawnHeart(){
+      const h=document.createElement('div');h.className='heart';
+      const size=18+Math.random()*36;h.style.width=size+'px';h.style.height=size+'px';
+      h.style.left=(10+Math.random()*80)+'%';h.style.top=(90+Math.random()*20)+'%';
+      h.style.opacity=0.9-Math.random()*0.4;const speed=6000+Math.random()*6000;
+      heartsBox.appendChild(h);
+      const start=Date.now();const startX=parseFloat(h.style.left);
+      (function anim(){const elapsed=Date.now()-start;const prog=elapsed/speed;if(prog>=1){h.remove();return;}
+        h.style.transform=`translate(-50%,-${prog*220}px) rotate(${prog*360}deg)`;
+        h.style.left=(startX+Math.sin(prog*6.28)*6)+'%';requestAnimationFrame(anim);})();
+    }
+    setInterval(spawnHeart,700);
+
+    const overlay=document.getElementById('overlay');
+    document.getElementById('askBtn').addEventListener('click',()=>{overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');});
+    document.getElementById('noBtn').addEventListener('click',()=>{overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');alert('ขอบคุณที่ได้รับฟังนะ — จะรอเสมอ 💖');});
+    document.getElementById('yesBtn').addEventListener('click',()=>{overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');showCongrats();});
+
+    function showCongrats(){
+      const colors=['#ff4d6d','#ffd166','#6ee7b7','#9ad0f5','#d6a4ff'];
+      for(let i=0;i<80;i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'%';c.style.top='-10%';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.transform=`rotate(${Math.random()*360}deg)`;document.body.appendChild(c);
+        const dur=1600+Math.random()*1600;c.animate([{transform:`translateY(0) rotate(${Math.random()*360}deg)`},{transform:`translateY(${80+Math.random()*120}vh) rotate(${Math.random()*720}deg)`}],{duration:dur,iterations:1,easing:'cubic-bezier(.2,.8,.2,1)'});
+        setTimeout(()=>c.remove(),dur+100);}
+      setTimeout(()=>{alert('เย้! ขอบคุณที่ตอบว่า \"ใช่\" 💕\nจาก: '+yourName+'\nถึง: '+loverName);},700);
+    }
+
+    // intro logic
+    const intro=document.getElementById('intro');
+    const mainWrap=document.getElementById('mainWrap');
+    let firstTap=false;
+    intro.addEventListener('click',()=>{
+      if(!firstTap){intro.querySelector('p').innerText='อีกนิดนึ่งน้าาาา 💖';firstTap=true;}
+      else{intro.classList.add('hidden');mainWrap.classList.remove('hidden');}
+    });
+  </script>
+</body>
+</html>
